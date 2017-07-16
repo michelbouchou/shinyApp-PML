@@ -1,0 +1,61 @@
+---
+title: "Pitch Data Products"
+author: "Michel Bouchou"
+date: "16 juillet 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+##Presentation
+
+- Here is an application using shiny.
+- It plots random points in different colors. 
+- You can select the number of points between 500 and 3000.
+- You can select opacity between 0 and 1.
+- You can print point in black or blue.
+ 
+##UI code
+```{r, eval=FALSE, echo=TRUE}
+library(shiny)
+
+shinyUI(fluidPage(
+  titlePanel("People in a city"),
+  sidebarLayout(
+    sidebarPanel(
+            numericInput("numeric", "How many points plotted ?",
+                         value = 1000, min = 500, max = 3000, step = 10),
+            sliderInput("opacity",
+                   "Ratio of opacity :",
+                   min = 0,
+                   max = 1,
+                   value = 100),
+            checkboxInput("showColor", "Blue color ?", value = FALSE)),
+    mainPanel(
+            h3("Some kind of plot"),
+            plotOutput("plot")))))
+```
+
+##Server code
+
+```{r, eval=FALSE, echo=TRUE}
+library(shiny)
+
+shinyServer(function(input, output) {
+   
+  output$plot <- renderPlot({
+          set.seed(18)
+          nbPoints <- input$numeric
+          opacity <- input$opacity
+          dataX <- runif(nbPoints, min = -100, max = 100)
+          dataY <- runif(nbPoints, min = -100, max = 100)
+          dataType <- ifelse(input$showColor, "blue", "black")
+          df <- data.frame(X = dataX, Y = dataY)
+          plot(df$X, df$Y, col = alpha(dataType, opacity), pch = 16)
+  })
+})
+```
+
+##Thank you !
